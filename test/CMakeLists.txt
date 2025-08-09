@@ -7,6 +7,8 @@ add_executable(test_runner
     test_calculator_digit.cpp
     test_calculator_command.cpp
     test_calculator.cpp
+    test_calculator_command_factory.cpp
+    test_calculator_controller.cpp
 )
 
 # ヘッダーとライブラリのパスを指定
