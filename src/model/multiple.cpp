@@ -20,7 +20,7 @@ CalculatorDigit Multiple::undo(CalculatorDigit d) const
         }
     } else if (d.isZero()) {
         // dが0でoperand!=0のときは、undoしたあとの値が0ということになる。
-        return CalculatorDigit(0, 1);
+        return CalculatorDigit(0);
     } else {
         return d / operand_;
     }
