@@ -9,17 +9,28 @@ CalculatorController::CalculatorController(Calculator& calculator, CalculatorCom
     current_{CalculatorDigit{0, 1}}
 {}
 
-int CalculatorController::clickDigit(int click_value)
+std::string CalculatorController::clickDigit(int click_value)
 {
+    oss_ << click_value;
     CalculatorDigit clicked = CalculatorDigit{click_value, 1};
-    CalculatorDigit ten{10, 1};
-    current_ = current_ * ten + clicked;
-    return current_.toInt();
+    if (oss_.str().find(".") == std::string::npos) {
+        // Case when Integer
+        CalculatorDigit ten{10, 1};
+        current_ = current_ * ten + clicked;
+    } else {
+        // Case when double
+        CalculatorDigit one_tenth{1, 10};
+        current_ = current_ + one_tenth * clicked;
+    }
+
+    return oss_.str();
+    
 }
 
 void CalculatorController::clickAdd()
 {
     try {
+        oss_.str("");
         current_command_->reset(current_);
         calculator_.compute(std::move(current_command_));
         current_ = CalculatorDigit{0, 1};
@@ -36,6 +47,7 @@ void CalculatorController::clickAdd()
 void CalculatorController::clickSubtract()
 {
     try {
+        oss_.str("");
         current_command_->reset(current_);
         calculator_.compute(std::move(current_command_));
         current_ = CalculatorDigit{0, 1};
@@ -52,6 +64,7 @@ void CalculatorController::clickSubtract()
 void CalculatorController::clickMultiple()
 {
     try {
+        oss_.str("");
         current_command_->reset(current_);
         calculator_.compute(std::move(current_command_));
         current_ = CalculatorDigit{0, 1};
@@ -68,6 +81,7 @@ void CalculatorController::clickMultiple()
 void CalculatorController::clickDivide()
 {
     try {
+        oss_.str("");
         current_command_->reset(current_);
         calculator_.compute(std::move(current_command_));
         current_ = CalculatorDigit{0, 1};
@@ -83,6 +97,7 @@ void CalculatorController::clickDivide()
 
 void CalculatorController::clickClear()
 {
+    oss_.str("");
     calculator_.clear();
     current_ = CalculatorDigit{0, 1};
 }
@@ -90,6 +105,7 @@ void CalculatorController::clickClear()
 double CalculatorController::clickEqual()
 {
     try {
+        oss_.str("");
         current_command_->reset(current_);
         calculator_.compute(std::move(current_command_));
         current_command_ = nullptr;
@@ -119,8 +135,11 @@ double CalculatorController::clickUndo()
     return result.toDouble();
 }
 
-void CalculatorController::clickPoint()
+std::string CalculatorController::clickPoint()
 {
-    // TODO
-    ;
+    if (oss_.str().find(".") == std::string::npos) {
+        oss_ << ".";
+    }
+
+    return oss_.str();
 }

@@ -31,8 +31,8 @@ void CalculatorGui::clickDigit()
 {
     Button *clicked_button = qobject_cast<Button *>(sender());
     int click_value = clicked_button->text().toInt();
-    int display_value = calculator_controller.clickDigit(click_value);
-    display->setText(QString::number(display_value));
+    std::string display_value = calculator_controller.clickDigit(click_value);
+    display->setText(tr(display_value.c_str()));
 }
 
 void CalculatorGui::clickAdd()
@@ -61,7 +61,7 @@ void CalculatorGui::clickEqual()
         double result = calculator_controller.clickEqual();
         display->setText(QString::number(result));
     } catch (std::exception e) {
-        display->setText("無効な計算です。");
+        display->setText(tr("無効な計算です。"));
     }
 }
 
@@ -77,7 +77,7 @@ void CalculatorGui::clickRedo()
         double result = calculator_controller.clickRedo();
         display->setText(QString::number(result));
     } catch (std::exception e) {
-        display->setText("redoに失敗姉妹した。");
+        display->setText(tr("redoに失敗しました。"));
     }
 }
 
@@ -87,13 +87,14 @@ void CalculatorGui::clickUndo()
         double result = calculator_controller.clickUndo();
         display->setText(QString::number(result));
     } catch (std::exception e) {
-        display->setText("undoに失敗姉妹した。");
+        display->setText(tr("undoに失敗しました。"));
     }
 }
 
 void CalculatorGui::clickPoint()
 {
-    ;
+    std::string display_value = calculator_controller.clickPoint();
+    display->setText(tr(display_value.c_str()));
 }
 
 void CalculatorGui::initDisplay(QLineEdit *display, QGridLayout *layout)
@@ -137,7 +138,7 @@ void CalculatorGui::initCalculatorButton(std::vector<Button*> digit_button, QGri
     }
 
     Button *point_btn = new Button(tr("."), this);
-    connect(point_btn, &Button::clicked, this, &CalculatorGui::clickClear);
+    connect(point_btn, &Button::clicked, this, &CalculatorGui::clickPoint);
     layout->addWidget(point_btn, 3, 4, 1, 1);
 
     Button *multiple_btn = new Button(tr("\303\227"), this);
