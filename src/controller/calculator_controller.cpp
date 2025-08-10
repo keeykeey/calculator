@@ -11,30 +11,35 @@ CalculatorController::CalculatorController(Calculator& calculator, CalculatorCom
 
 std::string CalculatorController::clickDigit(int click_value)
 {
-    oss_ << click_value;
-    CalculatorDigit clicked = CalculatorDigit{click_value, 1};
-    if (oss_.str().find(".") == std::string::npos) {
-        // Case when Integer
-        CalculatorDigit ten{10, 1};
-        current_ = current_ * ten + clicked;
+    if (current_command_.has_value()) {
+        oss_ << click_value;
+        CalculatorDigit clicked = CalculatorDigit{click_value, 1};
+        if (oss_.str().find(".") == std::string::npos) {
+            // Case when Integer
+            CalculatorDigit ten{10, 1};
+            current_ = current_ * ten + clicked;
+        } else {
+            // Case when double
+            CalculatorDigit one_tenth{1, 10};
+            current_ = current_ + one_tenth * clicked;
+        }
+        return oss_.str();
     } else {
-        // Case when double
-        CalculatorDigit one_tenth{1, 10};
-        current_ = current_ + one_tenth * clicked;
+        return std::string{"Which operand ?"};
     }
-
-    return oss_.str();
-    
 }
 
 void CalculatorController::clickAdd()
 {
     try {
-        oss_.str("");
-        current_command_->reset(current_);
-        calculator_.compute(std::move(current_command_));
+        if (current_command_.has_value()) {
+            oss_.str("");
+            current_command_.value()->reset(current_);
+            calculator_.compute(std::move(current_command_.value()));
+        }
         current_ = CalculatorDigit{0, 1};
-        current_command_ = command_factory_.createAdd(current_);
+        current_command_.emplace(command_factory_.createAdd(current_));
+
     } catch (std::exception e) {
         calculator_.clear();
         current_command_ = nullptr;
@@ -47,11 +52,14 @@ void CalculatorController::clickAdd()
 void CalculatorController::clickSubtract()
 {
     try {
-        oss_.str("");
-        current_command_->reset(current_);
-        calculator_.compute(std::move(current_command_));
+        if (current_command_.has_value()) {
+            oss_.str("");
+            current_command_.value()->reset(current_);
+            calculator_.compute(std::move(current_command_.value()));
+        }
         current_ = CalculatorDigit{0, 1};
-        current_command_ = command_factory_.createSubtract(current_);
+        current_command_.emplace(command_factory_.createSubtract(current_));
+
     } catch (std::exception e) {
         calculator_.clear();
         current_command_ = nullptr;
@@ -64,11 +72,14 @@ void CalculatorController::clickSubtract()
 void CalculatorController::clickMultiple()
 {
     try {
-        oss_.str("");
-        current_command_->reset(current_);
-        calculator_.compute(std::move(current_command_));
+        if (current_command_.has_value()) {
+            oss_.str("");
+            current_command_.value()->reset(current_);
+            calculator_.compute(std::move(current_command_.value()));
+        }
         current_ = CalculatorDigit{0, 1};
-        current_command_ = command_factory_.createMultiple(current_);
+        current_command_.emplace(command_factory_.createMultiple(current_));
+
     } catch (std::exception e) {
         calculator_.clear();
         current_command_ = nullptr;
@@ -81,11 +92,14 @@ void CalculatorController::clickMultiple()
 void CalculatorController::clickDivide()
 {
     try {
-        oss_.str("");
-        current_command_->reset(current_);
-        calculator_.compute(std::move(current_command_));
+        if (current_command_.has_value()) {
+            oss_.str("");
+            current_command_.value()->reset(current_);
+            calculator_.compute(std::move(current_command_.value()));
+        }
         current_ = CalculatorDigit{0, 1};
-        current_command_ = command_factory_.createDivide(current_);
+        current_command_.emplace(command_factory_.createDivide(current_));
+
     } catch (std::exception e) {
         calculator_.clear();
         current_command_ = nullptr;
@@ -100,22 +114,25 @@ void CalculatorController::clickClear()
     oss_.str("");
     calculator_.clear();
     current_ = CalculatorDigit{0, 1};
+    current_command_.emplace(command_factory_.createAdd(current_));
 }
 
 double CalculatorController::clickEqual()
 {
     try {
-        oss_.str("");
-        current_command_->reset(current_);
-        calculator_.compute(std::move(current_command_));
-        current_command_ = nullptr;
-        current_command_ = command_factory_.createAdd(0);
-        current_ = CalculatorDigit{0, 1};
+        if (current_command_.has_value()) {
+            oss_.str("");
+            current_command_.value()->reset(current_);
+            calculator_.compute(std::move(current_command_.value()));
+            current_command_.reset();
+            current_ = CalculatorDigit{0, 1};
+        }
+
         return calculator_.result().toDouble();
+
     } catch (std::exception e) {
         calculator_.clear();
         current_command_ = nullptr;
-        current_command_ = command_factory_.createAdd(0);
         current_ = CalculatorDigit(0, 1);
         throw e;
     }

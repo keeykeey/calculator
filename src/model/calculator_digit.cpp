@@ -112,7 +112,7 @@ CalculatorDigit operator*(const CalculatorDigit& lhs, const CalculatorDigit& rhs
 CalculatorDigit operator/(const CalculatorDigit& lhs, const CalculatorDigit& rhs)
 {
     if (rhs.numerator() == 0) {
-        throw std::invalid_argument("division by zero");
+        throw std::runtime_error("division by zero");
     }
 
     int numerator = lhs.numerator() * rhs.denominator();
